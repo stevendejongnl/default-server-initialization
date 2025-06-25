@@ -8,6 +8,7 @@ VMINFO_SCRIPT="01-vm-info.sh"
 MOTD="/etc/motd"
 MOTD_BAK="/etc/motd.backup"
 MOTD_D="/etc/update-motd.d"
+MOTD_D_BAK="/etc/update-motd.d.backup"
 REPO_RAW="https://raw.githubusercontent.com/stevendejongnl/default-server-initialization/main"
 
 if [ -d "$PROFILED" ]; then
@@ -31,6 +32,8 @@ echo "Clearing $MOTD"
 sudo sh -c 'echo "" > /etc/motd'
 
 if [ -d "$MOTD_D" ]; then
+    echo "Backing up $MOTD_D to $MOTD_D_BAK"
+    sudo cp -a "$MOTD_D" "$MOTD_D_BAK"
     echo "Disabling all scripts in $MOTD_D (Ubuntu dynamic MOTD)..."
     sudo chmod -x $MOTD_D/*
 fi

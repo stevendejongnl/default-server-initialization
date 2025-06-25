@@ -5,7 +5,7 @@ This repository provides a simple and robust way to initialize a Linux server wi
 ## Features
 
 - **Colorful server info banner** on login (CPU, RAM, disk, network, Kubernetes context, etc)
-- **Backs up** your original `/etc/profile.d` and `/etc/motd`
+- **Backs up** your original `/etc/profile.d`, `/etc/motd`, and `/etc/update-motd.d`
 - **Removes default and dynamic MOTD** content (including Ubuntu’s welcome screen)
 - **Easy installation** via a single `curl | sudo bash` command
 - **Easy revert** to bring back the default Ubuntu login experience
@@ -20,6 +20,7 @@ curl -fsSL https://raw.githubusercontent.com/stevendejongnl/default-server-initi
 
 This will:
 - Backup `/etc/profile.d` to `/etc/profile.d.backup`
+- Backup `/etc/update-motd.d` to `/etc/update-motd.d.backup`
 - Install `01-vm-info.sh` from this repository into `/etc/profile.d/`
 - Backup `/etc/motd` to `/etc/motd.backup` (if it exists)
 - Clear `/etc/motd`
@@ -38,7 +39,7 @@ This will:
 - Restore `/etc/profile.d` from the backup
 - Remove the custom server info script
 - Restore `/etc/motd` from the backup
-- Re-enable all scripts in `/etc/update-motd.d/` (default Ubuntu banners and MOTD return)
+- Restore `/etc/update-motd.d` from the backup (default Ubuntu banners and MOTD return)
 
 ## What Will I See at Login?
 

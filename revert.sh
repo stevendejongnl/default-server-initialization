@@ -8,6 +8,7 @@ VMINFO_SCRIPT="$PROFILED/01-vm-info.sh"
 MOTD="/etc/motd"
 MOTD_BAK="/etc/motd.backup"
 MOTD_D="/etc/update-motd.d"
+MOTD_D_BAK="/etc/update-motd.d.backup"
 
 if [ -d "$PROFILED_BAK" ]; then
     echo "Restoring $PROFILED from $PROFILED_BAK"
@@ -29,9 +30,12 @@ else
     echo "No backup found for $MOTD. Skipping restore."
 fi
 
-if [ -d "$MOTD_D" ]; then
-    echo "Re-enabling all scripts in $MOTD_D"
-    sudo chmod +x $MOTD_D/*
+if [ -d "$MOTD_D_BAK" ]; then
+    echo "Restoring $MOTD_D from $MOTD_D_BAK"
+    sudo rm -rf "$MOTD_D"
+    sudo cp -a "$MOTD_D_BAK" "$MOTD_D"
+else
+    echo "No backup found for $MOTD_D. Skipping restore."
 fi
 
 echo "Revert complete! The original MOTD and login banners should be back after a new login."
