@@ -7,6 +7,7 @@ PROFILED_BAK="/etc/profile.d.backup"
 VMINFO_SCRIPT="01-vm-info.sh"
 MOTD="/etc/motd"
 MOTD_BAK="/etc/motd.backup"
+MOTD_D="/etc/update-motd.d"
 REPO_RAW="https://raw.githubusercontent.com/stevendejongnl/default-server-initialization/main"
 
 if [ -d "$PROFILED" ]; then
@@ -28,5 +29,10 @@ fi
 
 echo "Clearing $MOTD"
 sudo sh -c 'echo "" > /etc/motd'
+
+if [ -d "$MOTD_D" ]; then
+    echo "Disabling all scripts in $MOTD_D (Ubuntu dynamic MOTD)..."
+    sudo chmod -x $MOTD_D/*
+fi
 
 echo "Done! Log out and back in to see server information on login."
