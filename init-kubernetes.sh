@@ -114,8 +114,8 @@ main() {
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    for arg in "$@"; do
-    case $arg in
+  while [[ $# -gt 0 ]]; do
+    case $1 in
       --master)
         NODE_TYPE="master"
         shift
@@ -125,14 +125,15 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         shift
         ;;
       --nodename=*)
-        NODENAME="${arg#*=}"
-        shift 2
+        NODENAME="${1#*=}"
+        shift
         ;;
       *)
+        shift
         ;;
     esac
   done
 
   echo "Running init-kubernetes.sh $NODE_TYPE with NODENAME=$NODENAME"
-  main
-fi
+    main
+  fi
