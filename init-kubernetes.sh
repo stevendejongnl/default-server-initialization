@@ -58,13 +58,14 @@ setup_kubeconfig() {
   fi
 }
 
-# deploy_flannel() {
-#   kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml --validate=false
-# }
+deploy_calico() {
+  echo "Deploying Calico network plugin..."
+  kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+}
 
-# check_status() {
-#   kubectl get nodes
-# }
+check_status() {
+  kubectl get nodes
+}
 
 main() {
   if [ -z "$NODENAME" ]; then
@@ -86,8 +87,8 @@ main() {
     echo "Not implemented in this script. Please run 'kubeadm join' manually."
   fi
   setup_kubeconfig
-  # deploy_flannel
-  # check_status
+  deploy_calico
+  check_status
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
