@@ -1,6 +1,7 @@
 # Default Server Initialization
 
-This repository provides scripts to quickly initialize a Linux server with a colorful system info banner at login and to clean up the default Message of the Day (MOTD). It also includes utilities for Kubernetes setup and Proxmox VM templating.
+This repository provides scripts to quickly initialize a Linux server with a colorful system info banner at login,
+clean up the default Message of the Day (MOTD), and includes utilities for Kubernetes setup and Proxmox VM templating.
 
 ## Features
 
@@ -11,10 +12,31 @@ This repository provides scripts to quickly initialize a Linux server with a col
 - **Easy revert** to restore the default Ubuntu login experience
 - **Kubernetes initialization** helper script
 - **Proxmox VM to template** conversion script
+- **Rancher installation** script for Kubernetes clusters
+
+## Scripts
+
+- `01-vm-info.sh`  
+  Displays system and VM information at login.
+
+- `init.sh`  
+  Performs initial server setup, installs the info banner, and cleans up MOTD.
+
+- `init-kubernetes.sh`  
+  Installs and initializes Kubernetes on the server.
+
+- `install-rancher.sh`  
+  Installs Rancher on an existing Kubernetes cluster.
+
+- `proxmox-vm-to-template.sh`  
+  Converts a Proxmox VM to a template.
+
+- `revert.sh`  
+  Restores all changes and re-enables the default Ubuntu login/MOTD.
 
 ## Quick Start
 
-Run the following command on your server to install:
+To install on your server:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/stevendejongnl/default-server-initialization/main/init.sh | sudo bash
@@ -23,25 +45,45 @@ curl -fsSL https://raw.githubusercontent.com/stevendejongnl/default-server-initi
 This will:
 - Backup `/etc/profile.d` to `/etc/profile.d.backup`
 - Backup `/etc/update-motd.d` to `/etc/update-motd.d.backup`
-- Install `01-vm-info.sh` from this repository into `/etc/profile.d/`
+- Install `01-vm-info.sh` into `/etc/profile.d/`
 - Backup `/etc/motd` to `/etc/motd.backup` (if it exists)
 - Clear `/etc/motd`
-- Disable all scripts in `/etc/update-motd.d/` so that the default (Ubuntu) login message and system stats are no longer shown
-- On next login, display a colorful server info summary
+- Disable all scripts in `/etc/update-motd.d/`
+- Show a colorful server info summary at next login
+
+## Usage
+
+1. **Initialize the server:**  
+   `./init.sh`
+
+2. **Install Kubernetes:**  
+   `./init-kubernetes.sh`
+
+3. **Install Rancher:**  
+   `./install-rancher.sh`
+
+4. **View VM information:**  
+   `./01-vm-info.sh`
+
+5. **Convert Proxmox VM to template:**  
+   `./proxmox-vm-to-template.sh`
+
+6. **Revert all changes:**  
+   `./revert.sh`
 
 ## How to Revert
 
-To undo all changes and restore the default Ubuntu login banners and MOTD:
+To restore the default Ubuntu login banners and MOTD:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/stevendejongnl/default-server-initialization/main/revert.sh | sudo bash
 ```
 
 This will:
-- Restore `/etc/profile.d` from the backup
+- Restore `/etc/profile.d` from backup
 - Remove the custom server info script
-- Restore `/etc/motd` from the backup
-- Restore `/etc/update-motd.d` from the backup (default Ubuntu banners and MOTD return)
+- Restore `/etc/motd` from backup
+- Restore `/etc/update-motd.d` from backup
 
 ## What Will I See at Login?
 
@@ -54,14 +96,12 @@ After installation, every interactive shell session (e.g. SSH login) will show a
 - Network interface addresses
 - Kubernetes context and cluster info (if `kubectl` is installed)
 
-## Files
+## Requirements
 
-- `init.sh` – Install/backup script for one-line setup
-- `revert.sh` – Restore all changes and reactivate default MOTD/Ubuntu login
-- `01-vm-info.sh` – Server info script, installed to `/etc/profile.d/`
-- `init-kubernetes.sh` – Script to initialize Kubernetes on the server
-- `proxmox-vm-to-template.sh` – Script to convert a Proxmox VM to a template
-- `README.md` – This documentation file
+- Bash shell
+- Access to a Linux server (preferably via Proxmox)
+- Kubernetes cluster (for Rancher installation)
+- `helm` and `kubectl` installed (for Rancher)
 
 ## Customization
 
