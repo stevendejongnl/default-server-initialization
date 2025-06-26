@@ -25,6 +25,7 @@ install_containerd() {
   sudo apt-get install -y containerd
   sudo mkdir -p /etc/containerd
   sudo containerd config default | sudo tee /etc/containerd/config.toml
+  sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
   sudo systemctl restart containerd
   sudo systemctl enable containerd
 }
@@ -50,6 +51,7 @@ init_control_plane() {
 setup_kubeconfig() {
   if [ "$(id -u)" -eq 0 ]; then
     export KUBECONFIG=/etc/kubernetes/admin.conf
+    echo 'export KUBECONFIG=/etc/kubernetes/admin.conf' >> ~/.bashrc
   else
     export KUBECONFIG=$HOME/.kube/config
     mkdir -p $HOME/.kube

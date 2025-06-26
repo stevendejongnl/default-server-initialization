@@ -1,18 +1,20 @@
 # Default Server Initialization
 
-This repository provides a simple and robust way to initialize a Linux server with useful system information at login, and to clean up the default Message of the Day (MOTD).  
+This repository provides scripts to quickly initialize a Linux server with a colorful system info banner at login and to clean up the default Message of the Day (MOTD). It also includes utilities for Kubernetes setup and Proxmox VM templating.
 
 ## Features
 
-- **Colorful server info banner** on login (CPU, RAM, disk, network, Kubernetes context, etc)
+- **Colorful server info banner** at login (CPU, RAM, disk, network, Kubernetes context, etc.)
 - **Backs up** your original `/etc/profile.d`, `/etc/motd`, and `/etc/update-motd.d`
 - **Removes default and dynamic MOTD** content (including Ubuntu’s welcome screen)
-- **Easy installation** via a single `curl | sudo bash` command
-- **Easy revert** to bring back the default Ubuntu login experience
+- **Easy installation** via a single command
+- **Easy revert** to restore the default Ubuntu login experience
+- **Kubernetes initialization** helper script
+- **Proxmox VM to template** conversion script
 
 ## Quick Start
 
-Run the following command on your server:
+Run the following command on your server to install:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/stevendejongnl/default-server-initialization/main/init.sh | sudo bash
@@ -45,18 +47,21 @@ This will:
 
 After installation, every interactive shell session (e.g. SSH login) will show a banner with:
 
-- Linux distribution, kernel version, and hostname  
-- CPU model, number of cores, and load average  
-- RAM and swap usage  
-- Disk usage for all mounted filesystems  
-- Network interface addresses  
+- Linux distribution, kernel version, and hostname
+- CPU model, number of cores, and load average
+- RAM and swap usage
+- Disk usage for all mounted filesystems
+- Network interface addresses
 - Kubernetes context and cluster info (if `kubectl` is installed)
 
 ## Files
 
-- `init.sh` – Install/backup script for one-line setup (see above)
+- `init.sh` – Install/backup script for one-line setup
 - `revert.sh` – Restore all changes and reactivate default MOTD/Ubuntu login
-- `01-vm-info.sh` – The actual server info script, installed to `/etc/profile.d/`
+- `01-vm-info.sh` – Server info script, installed to `/etc/profile.d/`
+- `init-kubernetes.sh` – Script to initialize Kubernetes on the server
+- `proxmox-vm-to-template.sh` – Script to convert a Proxmox VM to a template
+- `README.md` – This documentation file
 
 ## Customization
 
