@@ -89,8 +89,8 @@ check_status() {
 }
 
 main() {
-  if [ -z "$NODENAME" ]; then
-    echo "Error: NODENAME is not set."
+  if [ -z "$NODE_TYPE" ]; then
+    echo "Error: NODE_TYPE is not set."
     exit 1
   fi
 
@@ -100,7 +100,7 @@ main() {
   install_containerd
   add_k8s_repo
   install_k8s_tools
-  if [ "$NODENAME" == "master" ]; then
+  if [ "$NODE_TYPE" == "master" ]; then
     echo "Initializing Kubernetes control plane on master node..."
     init_control_plane
     setup_kubeconfig
@@ -117,18 +117,22 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     for arg in "$@"; do
     case $arg in
       --master)
-        NODENAME="master"
+        NODE_TYPE="master"
         shift
         ;;
       --worker)
-        NODENAME="worker"
+        NODE_TYPE="worker"
         shift
+        ;;
+      --nodename=*)
+        NODENAME="${arg#*=}"
+        shift 2
         ;;
       *)
         ;;
     esac
   done
 
-  echo "Running init-kubernetes.sh $NODENAME"
+  echo "Running init-kubernetes.sh $NODE_TYPE with NODENAME=$NODENAME"
   main
 fi
