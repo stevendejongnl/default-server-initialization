@@ -43,7 +43,8 @@ install_k8s_tools() {
 
 init_control_plane() {
   POD_CIDR=10.244.0.0/16
-  sudo kubeadm init --pod-network-cidr="$POD_CIDR"
+  MASTER_IP=$(ip addr show eth0 | awk '/inet / {print $2}' | cut -d/ -f1)
+  sudo kubeadm init --apiserver-advertise-address="$MASTER_IP" --apiserver-cert-extra-sans="$MASTER_IP" --pod-network-cidr="$POD_CIDR" --node-name "$NODENAME"
 }
 
 setup_kubeconfig() {
@@ -66,16 +67,45 @@ setup_kubeconfig() {
 # }
 
 main() {
+  if [ -z "$NODENAME" ]; then
+    echo "Error: NODENAME is not set."
+    exit 1
+  fi
+
   update_system
   disable_swap
   configure_kernel
   install_containerd
   add_k8s_repo
   install_k8s_tools
-  init_control_plane
+  if [ "$NODENAME" == "master" ]; then
+    echo "Initializing Kubernetes control plane on master node..."
+    init_control_plane
+  else
+    echo "Joining worker node to Kubernetes cluster..."
+    echo "Not implemented in this script. Please run 'kubeadm join' manually."
+  fi
   setup_kubeconfig
   # deploy_flannel
   # check_status
 }
 
-main
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    for arg in "$@"; do
+    case $arg in
+      --master)
+        NODENAME="master"
+        shift
+        ;;
+      --worker)
+        NODENAME="worker"
+        shift
+        ;;
+      *)
+        ;;
+    esac
+  done
+
+  echo "Running init-kubernetes.sh $NODENAME"
+  main
+fi
