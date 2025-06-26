@@ -30,9 +30,9 @@ install_containerd() {
 }
 
 add_k8s_repo() {
-  sudo apt-get install -y apt-transport-https ca-certificates curl
-  sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-  echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 }
 
 install_k8s_tools() {
@@ -42,27 +42,28 @@ install_k8s_tools() {
 }
 
 init_control_plane() {
-  POD_CIDR="${1:-10.244.0.0/16}"
+  POD_CIDR=10.244.0.0/16
   sudo kubeadm init --pod-network-cidr="$POD_CIDR"
 }
 
 setup_kubeconfig() {
-  mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+  if [ "$(id -u)" -eq 0 ]; then
+    export KUBECONFIG=/etc/kubernetes/admin.conf
+  else
+    export KUBECONFIG=$HOME/.kube/config
+    mkdir -p $HOME/.kube
+    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+  fi
 }
 
-deploy_flannel() {
-  kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-}
+# deploy_flannel() {
+#   kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml --validate=false
+# }
 
-join_worker_node() {
-  echo "Enter the kubeadm join command received from the control-plane:"
-}
-
-check_status() {
-  kubectl get nodes
-}
+# check_status() {
+#   kubectl get nodes
+# }
 
 main() {
   update_system
@@ -71,14 +72,10 @@ main() {
   install_containerd
   add_k8s_repo
   install_k8s_tools
-
-  echo "Base installation finished."
-  echo "Use the following functions for next steps:"
-  echo "  init_control_plane <pod-cidr>"
-  echo "  setup_kubeconfig"
-  echo "  deploy_flannel"
-  echo "  join_worker_node"
-  echo "  check_status"
+  init_control_plane
+  setup_kubeconfig
+  # deploy_flannel
+  # check_status
 }
 
 main
