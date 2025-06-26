@@ -44,10 +44,18 @@ ip -o -4 addr show | awk -v Y="$YELLOW" -v N="$NC" -v W="$WHITE" '{print "  " Y 
 
 echo -e "\n${MAGENTA}Kubernetes Info:${NC}"
 if command -v kubectl >/dev/null 2>&1; then
+     if [ "$(id -u)" -eq 0 ]; then
+        export KUBECONFIG=/etc/kubernetes/admin.conf
+    else
+        export KUBECONFIG=$HOME/.kube/config
+    fi
+
     context=$(kubectl config current-context 2>/dev/null)
     if [[ -n "$context" ]]; then
         echo -e "  ${YELLOW}Context   ${NC}: ${WHITE}$context${NC}"
-        kubectl cluster-info 2>/dev/null | grep -E 'master|control plane|Kubernetes control plane' | sed "s/^/  $WHITE/" | sed "s/\$/ $NC/"
+        kubectl cluster-info 2>/dev/null | grep -E 'master|control plane|Kubernetes control plane' | while read -r line; do
+            echo -e "  ${WHITE}${line}${NC}"
+        done
         nodes=$(kubectl get nodes --no-headers 2>/dev/null | wc -l)
         echo -e "  ${YELLOW}Node Count${NC}: ${WHITE}$nodes${NC}"
     else
