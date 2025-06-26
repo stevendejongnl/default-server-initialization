@@ -32,8 +32,27 @@ install_containerd() {
 
 add_k8s_repo() {
   sudo apt-get install -y apt-transport-https ca-certificates curl gpg
-  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+  # 1.33 isn't compatible with rancher yet
+  #  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  #  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+  sudo tee /etc/apt/preferences.d/kubernetes <<EOF
+Package: kubelet
+Pin: version 1.32.*
+Pin-Priority: 1001
+
+Package: kubeadm
+Pin: version 1.32.*
+Pin-Priority: 1001
+
+Package: kubectl
+Pin: version 1.32.*
+Pin-Priority: 1001
+EOF
 }
 
 install_k8s_tools() {
