@@ -84,13 +84,14 @@ main() {
   if [ "$NODENAME" == "master" ]; then
     echo "Initializing Kubernetes control plane on master node..."
     init_control_plane
+    setup_kubeconfig
+    deploy_calico
+    check_status
   else
     echo "Joining worker node to Kubernetes cluster..."
     echo "Not implemented in this script. Please run 'kubeadm join' manually."
+    echo "after setup kubeconfig"
   fi
-  setup_kubeconfig
-  deploy_calico
-  check_status
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
